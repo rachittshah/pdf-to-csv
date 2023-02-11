@@ -7,6 +7,17 @@ import openai
 openai.api_key = "your-openai-key"
 
 def extract_entities(text):
+    """
+    Given a string of text, returns the extracted entities, such as company name, invoice number, date, 
+    company tax ID, total amount with tax, total tax, currency. Numeric values do not show EUR or USD 
+    symbols, and dates are in format: DD-MM-YYYY.
+
+    Parameters:
+    text (str): A string of text to be processed.
+
+    Returns:
+    dict: The extracted entities in the form of a dictionary.
+    """
     response = openai.Completion.create(
       engine="text-davinci-003",
       prompt='Extract all entities company name, invoice number, date, company tax ID, total amount with tax, total tax, currency. For numeric values do not show EUR or USD symbols. dates in format: DD-MM-YYYY.\n\n###\n\n"' + text + '"',
@@ -19,6 +30,15 @@ def extract_entities(text):
     return response
 
 def extract_text(pdf_path):
+    """
+    Given the path to a PDF file, extracts the text from each page and returns it as a string.
+
+    Parameters:
+    pdf_path (str): The path to the PDF file.
+
+    Returns:
+    str: The extracted text from the PDF file.
+    """
     with pdfplumber.open(pdf_path) as pdf:
         pages = pdf.pages
         text = ''
@@ -27,6 +47,10 @@ def extract_text(pdf_path):
         return text
 
 def pdf_extractor_app():
+    """
+    Main function for the PDF Extractor app. Allows the user to upload a PDF file, extracts the entities 
+    from the text of the PDF, and displays the extracted entities in a table.
+    """
     pdf_file = st.file_uploader("Upload a PDF", type=["pdf"])
     if pdf_file:
         text = extract_text(pdf_file)
@@ -41,6 +65,12 @@ def pdf_extractor_app():
 pdf_files = {}
 
 def main():
+    """
+    The main function of the PDF Extractor app. It contains a Streamlit title and a side menu with two options: 
+    "Upload PDF" and "PDF List".
+    Depending on the user's choice, it either calls the pdf_extractor_app function to upload a new PDF or allows the 
+    user to select a previously uploaded PDF from the list. If no PDFs have been uploaded yet, it displays a warning.
+    """
     st.title("PDF Extractor")
     menu = ["Upload PDF", "PDF List"]
     choice = st.sidebar.selectbox("Select Option", menu)
